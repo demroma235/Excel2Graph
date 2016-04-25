@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="Excel2Graph">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
+    <script type="text/javascript" src="{% static 'js/angular.min.js' %}"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Column 1', 'Column 2'],
+            {% for list_values in list %}
+                [
+                {% for l in list_values %}
+                {{ l }},
+                {% endfor %}
+                ],
+            {% endfor %}
+        ]);
+
+        var options = {
+          title: 'Column 1 vs. Column 2 comparison',
+          hAxis: {title: 'Column 1', minValue: 0, maxValue: 15},
+          vAxis: {title: 'Column 2', minValue: 0, maxValue: 15},
+          legend: 'none'
+        };
+
+        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+      }
+    </script>
+</head>
+<body>
+<script src="{% static 'js/app.js' %}"></script>
+<div class="panel panel-default">
+    <div class="panel-heading">Загрузить файл</div>
+    <div class="panel-body">
+        <form action="load_file" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.download_file }}
+            <br/>
+            <input type="submit" class="form-control" id="basic-url" aria-describedby="basic-addon3" style="width: 100px">
+
+        </form>
+        <br/>
+        <a class="btn btn-default" href="/result">Результаты</a>
+    </div>
+</div>
+
+
+</body>
+</html>
